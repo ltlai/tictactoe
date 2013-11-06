@@ -11,6 +11,15 @@ var winConditions = [['0','1','2'],
                      ['2','4','6']
                     ]
 
+function winFound(winningSet, claimedSquares) {
+  for(var i=0; i<winningSet.length; i++) {
+    if (claimedSquares.indexOf(winningSet[i]) === -1) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function checkWin() {
   for(var i=0; i<winConditions.length; i++) {
     if (winFound(winConditions[i], playerSquares)) {
@@ -22,15 +31,6 @@ function checkWin() {
       $('td').off('click');
     }
   }
-}
-
-function winFound(winningSet, claimedSquares) {
-  for(var i=0; i<winningSet.length; i++) {
-    if (claimedSquares.indexOf(winningSet[i]) === -1) {
-      return false;
-    }
-  }
-  return true;
 }
 
 function claimSquare(id, player) {
@@ -47,9 +47,25 @@ function claimSquare(id, player) {
   emptySquares.splice(emptySquares.indexOf(id), 1)
 }
 
-function almostWin() {
+function oneAwayFromWin(winningSet, claimedSquares) {
+  var matched = 0;
+  for(var i=0; i<winningSet.length; i++) {
+    if (claimedSquares.indexOf(winningSet[i]) > -1) {
+      matched += 1;
+    }
+    if (matched === 2) {
+      return true;
+    }
+    if (i === 2) {
+      matched = 0;
+    }
+  }
+  return false;
+}
+
+function nearWin() {
   for(var i=0; i<winConditions.length; i++) {
-    if (oneAway(winConditions[i], playerSquares) || oneAway(winConditions[i], computerSquares)) {
+    if (oneAwayFromWin(winConditions[i], playerSquares) || oneAwayFromWin(winConditions[i], computerSquares)) {
       for(var j=0; j<3; j++) {
         var target = winConditions[i][j];
         if (emptySquares.indexOf(target) > -1) {
@@ -61,25 +77,9 @@ function almostWin() {
   return false;
 }
 
-function oneAway(winningSet, claimedSquares) {
-  var claimed = 0;
-  for(var i=0; i<winningSet.length; i++) {
-    if (claimedSquares.indexOf(winningSet[i]) > -1) {
-      claimed += 1;
-    }
-    if (claimed === 2) {
-      return true;
-    }
-    if (i === 2) {
-      claimed = 0;
-    }
-  }
-  return false;
-}
-
 function computerMove() {
-  if (almostWin()) {
-    claimSquare(almostWin());
+  if (nearWin()) {
+    claimSquare(nearWin());
   }
   else if (emptySquares.indexOf('4') > -1) {
     claimSquare('4');
@@ -91,7 +91,6 @@ function computerMove() {
 }
 
 $(document).ready(function() {
-
   $('td').click(function() {
     claimSquare(this.id, 'player');
     checkWin();
@@ -100,5 +99,4 @@ $(document).ready(function() {
     }
     computerMove();
   });
-
 });
