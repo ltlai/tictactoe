@@ -15,9 +15,11 @@ function checkWin() {
   for(var i=0; i<winConditions.length; i++) {
     if (winFound(winConditions[i], playerSquares)) {
       alert('You won!');
+      $('td').off('click');
     }
     else if (winFound(winConditions[i], computerSquares)) {
       alert('You lost!');
+      $('td').off('click');
     }
   }
 }
@@ -32,28 +34,17 @@ function winFound(winningSet, claimedSquares) {
 }
 
 function claimSquare(id, player) {
+  var square = '#' + id
   if (player) {
-    $('#' + id).text('X');
+    $(square).text('X');
     playerSquares.push(id);
   }
   else {
-    $('#' + id).text('O');
+    $(square).text('O');
     computerSquares.push(id);
   }
+  $(square).off('click');
   emptySquares.splice(emptySquares.indexOf(id), 1)
-}
-
-function computerMove() {
-  if (almostWin()) {
-    claimSquare(almostWin());
-  }
-  else if (emptySquares.indexOf('4') > -1) {
-    claimSquare('4');
-  }
-  else {
-    claimSquare(emptySquares[0]);
-  }
-  checkWin();
 }
 
 function almostWin() {
@@ -86,16 +77,28 @@ function oneAway(winningSet, claimedSquares) {
   return false;
 }
 
+function computerMove() {
+  if (almostWin()) {
+    claimSquare(almostWin());
+  }
+  else if (emptySquares.indexOf('4') > -1) {
+    claimSquare('4');
+  }
+  else {
+    claimSquare(emptySquares[0]);
+  }
+  checkWin();
+}
+
 $(document).ready(function() {
 
-  $('button').click(function() {
+  $('td').click(function() {
     claimSquare(this.id, 'player');
     checkWin();
     if (emptySquares.length === 0) {
       alert('No more empty spaces. It\'s a tie!');
     }
     computerMove();
-    console.log(emptySquares);
   });
 
 });
