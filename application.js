@@ -10,7 +10,7 @@ var winConditions = [['0','1','2'],
                      ['0','4','8'],
                      ['2','4','6']]
 
-function winFound(winningSet, claimedSquares) {
+function gameWon(winningSet, claimedSquares) {
   for(var i=0; i<winningSet.length; i++) {
     if (claimedSquares.indexOf(winningSet[i]) === -1) {
       return false;
@@ -21,14 +21,20 @@ function winFound(winningSet, claimedSquares) {
 
 function checkWin() {
   for(var i=0; i<winConditions.length; i++) {
-    if (winFound(winConditions[i], playerSquares)) {
+    if (gameWon(winConditions[i], playerSquares)) {
       alert('You won!');
       $('td').off('click');
     }
-    else if (winFound(winConditions[i], computerSquares)) {
+    else if (gameWon(winConditions[i], computerSquares)) {
       alert('You lost!');
       $('td').off('click');
     }
+  }
+}
+
+function checkTie() {
+  if (emptySquares.length === 0) {
+    alert('Game over. It\'s a tie!');
   }
 }
 
@@ -109,9 +115,7 @@ $(document).ready(function() {
   $('td').click(function() {
     claimSquare(this.id, 'player');
     checkWin();
-    if (emptySquares.length === 0) {
-      alert('No more empty spaces. It\'s a tie!');
-    }
+    checkTie();
     computerMove();
   });
 });
