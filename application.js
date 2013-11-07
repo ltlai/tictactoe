@@ -8,8 +8,7 @@ var winConditions = [['0','1','2'],
                      ['1','4','7'],
                      ['2','5','8'],
                      ['0','4','8'],
-                     ['2','4','6']
-                    ]
+                     ['2','4','6']]
 
 function winFound(winningSet, claimedSquares) {
   for(var i=0; i<winningSet.length; i++) {
@@ -34,16 +33,16 @@ function checkWin() {
 }
 
 function claimSquare(id, player) {
-  var square = '#' + id
+  var cell = '#' + id
   if (player) {
-    $(square).text('X');
+    $(cell).text('X');
     playerSquares.push(id);
   }
   else {
-    $(square).text('O');
+    $(cell).text('O');
     computerSquares.push(id);
   }
-  $(square).off('click');
+  $(cell).off('click');
   emptySquares.splice(emptySquares.indexOf(id), 1)
 }
 
@@ -67,9 +66,9 @@ function nearWin() {
   for(var i=0; i<winConditions.length; i++) {
     if (oneAwayFromWin(winConditions[i], playerSquares) || oneAwayFromWin(winConditions[i], computerSquares)) {
       for(var j=0; j<3; j++) {
-        var target = winConditions[i][j];
-        if (emptySquares.indexOf(target) > -1) {
-          return target;
+        var targetSquare = winConditions[i][j];
+        if (emptySquares.indexOf(targetSquare) > -1) {
+          return targetSquare;
         }
       }
     }
@@ -84,10 +83,26 @@ function computerMove() {
   else if (emptySquares.indexOf('4') > -1) {
     claimSquare('4');
   }
+  else if (arraysEqual(playerSquares, ['2', '6'])) {
+    claimSquare('1');
+  }
   else {
     claimSquare(emptySquares[0]);
   }
   checkWin();
+}
+
+function arraysEqual(a, b) {
+  var i = a.length;
+  if (i != b.length) {
+    return false;
+  }
+  while (i--) {
+    if (a.sort()[i] !== b.sort()[i]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 $(document).ready(function() {
