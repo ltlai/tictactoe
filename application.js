@@ -61,9 +61,6 @@ function oneAwayFromWin(winningSet, claimedSquares) {
     if (matched === 2) {
       return true;
     }
-    if (i === 2) {
-      matched = 0;
-    }
   }
   return false;
 }
