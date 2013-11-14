@@ -61,36 +61,10 @@ function checkTie() {
   }
 }
 
-function claimSquare(id, player) {
-  var cell = '#' + id
-  if (player) {
-    $(cell).text('X');
-    playerSquares.push(id);
-  }
-  else {
-    $(cell).text('O');
-    computerSquares.push(id);
-  }
-  $(cell).off('click');
-  emptySquares.splice(emptySquares.indexOf(id), 1)
-}
-
-function oneAwayFromWin(winningSet, claimedSquares) {
-  var matched = 0;
-  for(var i=0; i<winningSet.length; i++) {
-    if (claimedSquares.indexOf(winningSet[i]) > -1) {
-      matched += 1;
-    }
-    if (matched === 2) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function nearWin() {
+function oneNeededToWin() {
   for(var i=0; i<winConditions.length; i++) {
-    if (oneAwayFromWin(winConditions[i], playerSquares) || oneAwayFromWin(winConditions[i], computerSquares)) {
+    if (match(winConditions[i], xSquares, 2) || 
+        match(winConditions[i], oSquares, 2)) {
       for(var j=0; j<3; j++) {
         var targetSquare = winConditions[i][j];
         if (emptySquares.indexOf(targetSquare) > -1) {
@@ -99,26 +73,28 @@ function nearWin() {
       }
     }
   }
-  return false;
+  return -1;
 }
 
-function computerMove() {
-  if (nearWin()) {
-    claimSquare(nearWin());
-  }
-  else if (emptySquares.indexOf('4') > -1) {
-    claimSquare('4');
-  }
-  else if (arraysEqual(playerSquares, ['2', '6'])) {
-    claimSquare('1');
+function claimSquare(id, player) {
+  var cell = '#' + id
+  if (player === 'X') {
+    $(cell).text('X');
+    xSquares.push(id);
   }
   else {
-    claimSquare(emptySquares[0]);
+    $(cell).text('O');
+    oSquares.push(id);
   }
-  checkWin();
+  $(cell).off('click');
+  removeFromEmptySquares(id);
 }
 
-function arraysEqual(a, b) {
+function removeFromEmptySquares(id) {
+  emptySquares.splice(emptySquares.indexOf(id), 1)
+}
+
+function sameSets(a, b) {
   var i = a.length;
   if (i != b.length) {
     return false;
