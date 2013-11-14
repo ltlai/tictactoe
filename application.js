@@ -1,5 +1,5 @@
-var playerSquares = []
-var computerSquares = []
+var xSquares = []
+var oSquares = []
 var emptySquares = ['0','1','2','3','4','5','6','7','8']
 var winConditions = [['0','1','2'],
                      ['3','4','5'],
@@ -10,22 +10,45 @@ var winConditions = [['0','1','2'],
                      ['0','4','8'],
                      ['2','4','6']]
 
-function gameWon(winningSet, claimedSquares) {
+function computerMove() {
+  if (oneNeededToWin() > -1) {
+    claimSquare(oneNeededToWin());
+  }
+  else if (emptySquares.indexOf('4') > -1) {
+    claimSquare('4');
+  }
+  else if (sameSets(xSquares, ['2', '6'])) {
+    claimSquare('1');
+  }
+  else if (sameSets(xSquares, ['4', '8'])) {
+    claimSquare('2');
+  }
+  else {
+    claimSquare(emptySquares[0]);
+  }
+  checkWin();
+}
+
+function match(winningSet, claimedSquares, numberMatched) {
+  var matched = 0;
   for(var i=0; i<winningSet.length; i++) {
-    if (claimedSquares.indexOf(winningSet[i]) === -1) {
-      return false;
+    if (claimedSquares.indexOf(winningSet[i]) > -1) {
+      matched += 1;
+    }
+    if (matched === numberMatched) {
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 function checkWin() {
   for(var i=0; i<winConditions.length; i++) {
-    if (gameWon(winConditions[i], playerSquares)) {
+    if (match(winConditions[i], xSquares, 3)) {
       alert('You won!');
       $('td').off('click');
     }
-    else if (gameWon(winConditions[i], computerSquares)) {
+    else if (match(winConditions[i], oSquares, 3)) {
       alert('You lost!');
       $('td').off('click');
     }
@@ -110,7 +133,7 @@ function arraysEqual(a, b) {
 
 $(document).ready(function() {
   $('td').click(function() {
-    claimSquare(this.id, 'player');
+    claimSquare(this.id, 'X');
     checkWin();
     checkTie();
     computerMove();
